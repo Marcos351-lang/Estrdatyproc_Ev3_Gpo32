@@ -6,7 +6,7 @@ from pathlib import Path
 import sqlite3
 
 # Configuración
-DB_FILE = Path("reservaciones.db")
+DB_FILE = Path("Reservaciones.db")
 EXPORT_DIR = Path("ARCHIVOS PY")
 
 TURNOS = ["Matutino", "Vespertino", "Nocturno"]
@@ -105,7 +105,7 @@ def mostrar_clientes_ordenados():
     conn.close()
 
     if not clientes:
-        print("No hay clientes registrados.")
+        print("No existen clientes registrados.")
         return None
 
     print("\nClientes registrados:")
@@ -121,7 +121,7 @@ def seleccionar_cliente():
         claves_validas = mostrar_clientes_ordenados()
         if claves_validas is None:
             return None
-        entrada = input("\nIngrese la clave del cliente (o 'CANCELAR'): ").strip()
+        entrada = input("\nIngrese clave del cliente (o 'CANCELAR'): ").strip()
         if entrada.upper() == "CANCELAR":
             return None
         try:
@@ -129,28 +129,28 @@ def seleccionar_cliente():
             if clave in claves_validas:
                 return clave
             else:
-                print("Clave inválida.")
+                print("Clave no válida.")
         except ValueError:
-            print("Entrada inválida.")
+            print("Entrada no válida.")
 
 
 def solicitar_fecha_reservacion():
     hoy = date.today()
     fecha_minima = hoy + timedelta(days=2)
     while True:
-        entrada = input(f"Ingrese la fecha de la reservación (dd/mm/yyyy). Mínimo {date_a_fecha_str(fecha_minima)}: ").strip()
+        entrada = input(f"Ingrese la fecha la fecha a reservar en el formato (dd/mm/yyyy). Mínimo {date_a_fecha_str(fecha_minima)}: ").strip()
         try:
             fecha = fecha_str_a_date(entrada)
         except ValueError:
-            print("Formato de fecha inválido. Use dd/mm/yyyy.")
+            print("Formato de fecha no válido. Use dd/mm/yyyy.")
             continue
 
         if fecha < fecha_minima:
-            print(f"La fecha debe ser al menos {date_a_fecha_str(fecha_minima)}.")
+            print(f"La fecha debe ser menor al {date_a_fecha_str(fecha_minima)}.")
             continue
 
         if es_domingo(fecha):
-            print("No se permiten reservaciones en domingos.")
+            print("No están permitidas reservaciones en domingos.")
             sugerida = fecha + timedelta(days=1)
             print(f"¿Desea usar la fecha sugerida: {date_a_fecha_str(sugerida)}? (S/N)")
             if input().strip().upper() == "S":
@@ -183,7 +183,7 @@ def obtener_salas_disponibles_en_fecha(fecha):
 def seleccionar_sala_y_turno(fecha):
     disponibles = obtener_salas_disponibles_en_fecha(fecha)
     if not disponibles:
-        print("No hay salas disponibles en la fecha seleccionada.")
+        print("No exsiten salas disponibles en la fecha seleccionada.")
         return None, None
 
     print("\nSalas disponibles:")
@@ -303,12 +303,12 @@ def editar_nombre_evento():
     resultados = cursor.fetchall()
     if not resultados:
         conn.close()
-        print("No hay reservaciones en el rango.")
+        print("No hay reservaciones dentro del rango.")
         pausa()
         return
 
     print("\n" + "=" * 100)
-    titulo = f"Reservaciones entre {inicio_str} y {fin_str}"
+    titulo = f"Reservaciones existentes entre {inicio_str} y {fin_str}"
     print(titulo.center(100))
     print("=" * 100)
     print(f"{'Folio':^8}{'Fecha':^12}{'Sala':^20}{'Cliente':^30}{'Evento':^30}")
@@ -321,14 +321,14 @@ def editar_nombre_evento():
     print("=" * 100)
 
     while True:
-        entrada = input("\nFolio a editar (o 'CANCELAR'): ").strip()
+        entrada = input("\nFolio que se va a editar (o 'CANCELAR'): ").strip()
         if entrada.upper() == "CANCELAR":
-            print("Operación cancelada.")
+            print("Operación cancelada con éxito.")
             break
         try:
             folio_editar = int(entrada)
         except ValueError:
-            print("Entrada inválida.")
+            print("Entrada no válida.")
             continue
         if folio_editar in folios_validos:
             while True:
@@ -353,18 +353,18 @@ def consultar_reservaciones_por_fecha():
     cursor.execute("SELECT COUNT(*) FROM reservaciones")
     if cursor.fetchone()[0] == 0:
         conn.close()
-        print("No hay reservaciones registradas.")
+        print("No hay ninguna reseervación registrada.")
         pausa()
         return
 
-    entrada = input("Fecha a consultar (dd/mm/yyyy) [Enter para hoy]: ").strip()
+    entrada = input("Fecha que se va a consultar (dd/mm/yyyy) [Enter para hoy]: ").strip()
     if not entrada:
         fecha_consulta = date.today()
     else:
         try:
             fecha_consulta = fecha_str_a_date(entrada)
         except ValueError:
-            print("Formato inválido.")
+            print("Formato no válido.")
             conn.close()
             pausa()
             return
@@ -383,7 +383,7 @@ def consultar_reservaciones_por_fecha():
     conn.close()
 
     if not resultados:
-        print(f"No hay reservaciones para el {fecha_str}.")
+        print(f"No existen reservaciones para el {fecha_str}.")
         pausa()
         return
 
@@ -515,10 +515,10 @@ def mostrar_menu():
     print("\n" + "=" * 40)
     print("  Sistema de Gestión de Reservaciones")
     print("=" * 40)
-    print("1. Registrar Cliente")
-    print("2. Registrar Sala")
-    print("3. Registrar Reservación")
-    print("4. Editar Nombre de Evento")
+    print("1. Registrar un nuevo Cliente")
+    print("2. Registrar una nueva Sala")
+    print("3. Registrar una nueva Reservación")
+    print("4. Editar Nombre(s) de Evento")
     print("5. Consultar Reservaciones por Fecha (Exportar a CSV)")
     print("6. Salir")
     print("=" * 40)
@@ -528,7 +528,7 @@ def main():
     init_db()
     while True:
         mostrar_menu()
-        opcion = input("Seleccione una opción: ").strip()
+        opcion = input("Por favor, seleccione una opción: ").strip()
         if opcion == "1":
             registrar_cliente()
         elif opcion == "2":
@@ -541,12 +541,12 @@ def main():
             consultar_reservaciones_por_fecha()
         elif opcion == "6":
             if confirmar_salida():
-                print("Saliendo del sistema.")
+                print("Saliendo del sistema, Gracias por su preferencia :).")
                 sys.exit(0)
             else:
                 continue
         else:
-            print("Opción no válida. Intente de nuevo.")
+            print("Opción no válida. Vuelva a intentarlo :).")
             pausa()
 
 
